@@ -1,23 +1,18 @@
 // popup.js
 document.addEventListener('DOMContentLoaded', () => {
-  const button = document.getElementById('showStorageButton');
+  const storageButton = document.getElementById('showStorageButton');
   const storageList = document.getElementById('storageList');
-  
-  button.addEventListener('click', () => {
-    // Toggle display of the storage list
+  const thirdPartyButton = document.getElementById('showThirdPartyButton');
+  const thirdPartyList = document.getElementById('thirdPartyList');
+
+  storageButton.addEventListener('click', () => {
     if (storageList.style.display === 'none') {
       storageList.style.display = 'block';
-      
-      // Fetch local storage data
       browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
         let activeTab = tabs[0].id;
         browser.tabs.sendMessage(activeTab, { action: "getLocalStorage" }).then((response) => {
           const items = response.data;
-          
-          // Clear any previous entries
-          storageList.innerHTML = '';
-
-          // Display all items
+          storageList.innerHTML = ''; // Clear the list
           for (let key in items) {
             let listItem = document.createElement("li");
             listItem.textContent = `${key}: ${items[key]}`;
@@ -28,7 +23,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     } else {
-      storageList.style.display = 'none';  // Hide the list if it's already visible
+      storageList.style.display = 'none'; // Hide list if already shown
+    }
+  });
+
+  thirdPartyButton.addEventListener('click', () => {
+    if (thirdPartyList.style.display === 'none') {
+      thirdPartyList.style.display = 'block';
+      // Request the third-party connections from the background script
+      browser.runtime.sendMessage({ action: "getThirdPartyConnections" }).then((response) => {
+        const connections = response.data;
+        thirdPartyList.innerHTML = ''; // Clear the list
+        connections.forEach(connection => {
+          let listItem = document.createElement("li");
+          listItem.textContent = connection;
+          thirdPartyList.appendChild(listItem);
+        });
+      }).catch((error) => {
+        console.error("Error fetching third-party connections:", error);
+      });
+    } else {
+      thirdPartyList.style.display = 'none'; // Hide list if already shown
     }
   });
 });

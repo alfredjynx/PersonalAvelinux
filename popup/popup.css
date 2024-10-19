@@ -3,14 +3,18 @@ body {
     padding: 10vw;
 }
 
-.storageList {
+#storageList, #thirdPartyList {
     display: none;
     list-style-type: none;
     padding-left: 0;
+    max-height: 150vw;  
+    overflow-y: auto;  
+    word-wrap: break-word; 
 }
 
 li {
     margin-bottom: 10vw;
+    word-wrap: break-word; 
 }
 
 button {
@@ -24,7 +28,7 @@ button:hover {
     color: red;
 }
 
-.storage{
+.lists{
     padding: 1vw;
     text-overflow: clip;
 }

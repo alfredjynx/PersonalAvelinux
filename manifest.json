@@ -1,18 +1,23 @@
 {
   "manifest_version": 3,
-  "name": "Local Storage Viewer",
-  "version": "1.0",
-  "description": "List all local storage items of the current website.",
+  "name": "Local Storage and Third-Party Connections Viewer",
+  "version": "1.1",
+  "description": "List all local storage items and third-party connections of the current website.",
   "permissions": [
     "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "webRequest",
+    "webRequestBlocking"
   ],
-  "action": {
-    "default_popup": "popup/popup.html"
-  },
+  "host_permissions": [
+    "*://*/*"
+  ],
   "background": {
     "scripts": ["background.js"]
+  },
+  "action": {
+    "default_popup": "popup/popup.html"
   },
   "content_scripts": [
     {
