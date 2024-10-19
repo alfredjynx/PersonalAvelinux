@@ -1,31 +1,23 @@
 {
-
-  "description": "Adds a browser action icon to the toolbar. Click the button to choose a beast. The active tab's body content is then replaced with a picture of the chosen beast. See https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Examples#beastify",
-  "manifest_version": 2,
-  "name": "Beastify",
+  "manifest_version": 3,
+  "name": "Local Storage Viewer",
   "version": "1.0",
-  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/beastify",
-  "icons": {
-    "48": "icons/beasts-48.png"
-  },
-
+  "description": "List all local storage items of the current website.",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage",
+    "scripting"
   ],
-
-  "browser_action": {
-    "default_icon": "icons/beasts-32.png",
-    "theme_icons": [{
-        "light": "icons/beasts-32-light.png",
-        "dark": "icons/beasts-32.png",
-        "size": 32
-    }],
-    "default_title": "Beastify",
-    "default_popup": "popup/choose_beast.html"
+  "action": {
+    "default_popup": "popup/popup.html"
   },
-
-  "web_accessible_resources": [
-    "beasts/*.jpg"
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
   ]
-
 }

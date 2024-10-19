@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 10vw;
+}
+
+.storageList {
+    display: none;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    margin-bottom: 10vw;
+}
+
+button {
+    margin-bottom: 10vw;
+    cursor: pointer;
+}
+
+button:hover {
+    margin-bottom: 10vw;
+    cursor: pointer;
+    color: red;
+}
+
+.storage{
+    padding: 1vw;
+    text-overflow: clip;
+}
