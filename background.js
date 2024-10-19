@@ -20,23 +20,27 @@ function isThirdPartyRequest(requestUrl, tabUrl) {
   }
 }
 
-// Verifica todas as chamadas dentro de uma tab do navegador (a atual)
-browser.webRequest.onCompleted.addListener(
-  (details) => {
-    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-      if (tabs.length > 0) {
-        const tabUrl = tabs[0].url;
-        if (isThirdPartyRequest(details.url, tabUrl)) {
-          // Add third-party connection to the list
-          if (!thirdPartyConnections.includes(details.url)) {
-            thirdPartyConnections.push(details.url);
+browser.tabs.onActivated.addListener((activeInfo) => {
+  // Clear previous third-party connections when the tab changes
+  thirdPartyConnections = [];
+    // Verifica todas as chamadas dentro de uma tab do navegador (a atual)
+    browser.webRequest.onCompleted.addListener(
+      (details) => {
+        browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+          if (tabs.length > 0) {
+            const tabUrl = tabs[0].url;
+            if (isThirdPartyRequest(details.url, tabUrl)) {
+              // Add third-party connection to the list
+              if (!thirdPartyConnections.includes(details.url)) {
+                thirdPartyConnections.push(details.url);
+              }
+            }
           }
-        }
-      }
-    });
-  },
-  { urls: ["<all_urls>"] }
-);
+        });
+      },
+      { urls: ["<all_urls>"] }
+    );
+});
 
 // Quando o popup.js quer a lista de domains de terceiros, a função retorna todos os que estão presentes na página
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
