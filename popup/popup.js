@@ -9,6 +9,46 @@ document.addEventListener('DOMContentLoaded', () => {
   const thirdPartyList = document.getElementById('thirdPartyList');
   const thirdPartyNumber = document.getElementById('thirdPartyNumber');
 
+  const cookiesButton = document.getElementById('showCookiesButton'); 
+  const firstPartyNumber = document.getElementById('firstPartyNumber');
+  const thirdPartyCookieNumber = document.getElementById('thirdPartyCookieNumber'); 
+
+  // Ativa quando clicado
+  cookiesButton.addEventListener('click', () => {
+
+    // verifica se o display de cookies já está ativado
+    if (firstPartyNumber.style.display === 'none' && thirdPartyCookieNumber.style.display === 'none') {
+
+      firstPartyNumber.style.display = 'block';
+      thirdPartyCookieNumber.style.display = 'block';
+
+      // Pega todos os cookies e filtra na hora
+      browser.cookies.getAll({}).then(cookies => {
+        let firstPartyCount = 0;
+        let thirdPartyCount = 0;
+
+        cookies.forEach(cookie => {
+          if (cookie.domain.includes('example.com')) { // Replace with your domain
+            firstPartyCount++;
+          } else {
+            thirdPartyCount++;
+          }
+        });
+
+        // Coloca os resultados nas caixas de texto HTML
+        firstPartyNumber.textContent = `First-party cookies: ${firstPartyCount}`;
+        thirdPartyCookieNumber.textContent = `Third-party cookies: ${thirdPartyCount}`;
+      }).catch((error) => {
+        
+        console.error("Error fetching cookies:", error);
+      });
+    } else {
+
+        firstPartyNumber.style.display = 'none';
+        thirdPartyCookieNumber.style.display = 'none';
+    }
+  });
+
   // Quando há um click no botão de Storage, ativa
   storageButton.addEventListener('click', () => {
 

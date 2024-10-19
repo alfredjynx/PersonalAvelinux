@@ -3,12 +3,12 @@ body {
     padding: 10vw;
 }
 
-#storageList, #thirdPartyList {
+.storageList, .thirdPartyList {
     display: none;
     list-style-type: none;
     padding-left: 0;
     max-height: 150vw;  
-    overflow-y: auto;  
+    overflow-y: scroll;  
     word-wrap: break-word; 
 }
 
