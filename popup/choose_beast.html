@@ -1,16 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html>
   <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="choose_beast.css" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="choose_beast.css"/>
   </head>
 
-  <body>
-    <div class="beast">Frog</div>
-    <div class="beast">Turtle</div>
-    <div class="beast">Snake</div>
+<body>
+  <div id="popup-content">
+    <button>Frog</button>
+    <button>Turtle</button>
+    <button>Snake</button>
+    <button type="reset">Reset</button>
+  </div>
+  <div id="error-content" class="hidden">
+    <p>Can't beastify this web page.</p><p>Try a different page.</p>
+  </div>
+  <script src="choose_beast.js"></script>
+</body>
 
-    <script src="choose_beast.js"></script>
-  </body>
 </html>
