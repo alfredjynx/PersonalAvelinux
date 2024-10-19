@@ -1,4 +1,3 @@
-// background.js
 browser.action.onClicked.addListener((tab) => {
     browser.scripting.executeScript({
       target: { tabId: tab.id },
@@ -8,17 +7,20 @@ browser.action.onClicked.addListener((tab) => {
 
 let thirdPartyConnections = [];
 
+// Verifica se a conexão é de terceiro
 function isThirdPartyRequest(requestUrl, tabUrl) {
   try {
     const requestDomain = new URL(requestUrl).hostname;
     const tabDomain = new URL(tabUrl).hostname;
-    return requestDomain !== tabDomain;  // Return true if domains don't match (i.e., third-party)
+    // Retorna como verdadeiro se as URLs não são iguais
+    return requestDomain !== tabDomain; 
   } catch (error) {
     console.error("Error parsing URL:", error);
     return false;
   }
 }
 
+// Verifica todas as chamadas dentro de uma tab do navegador (a atual)
 browser.webRequest.onCompleted.addListener(
   (details) => {
     browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
@@ -36,6 +38,7 @@ browser.webRequest.onCompleted.addListener(
   { urls: ["<all_urls>"] }
 );
 
+// Quando o popup.js quer a lista de domains de terceiros, a função retorna todos os que estão presentes na página
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "getThirdPartyConnections") {
     sendResponse({ data: thirdPartyConnections });

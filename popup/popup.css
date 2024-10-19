@@ -18,12 +18,12 @@ li {
 }
 
 button {
-    margin-bottom: 10vw;
+    /* margin-bottom: 10vw; */
     cursor: pointer;
 }
 
 button:hover {
-    margin-bottom: 10vw;
+    /* margin-bottom: 10vw; */
     cursor: pointer;
     color: red;
 }
