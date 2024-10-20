@@ -68,3 +68,26 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ changes: domChangesLog });
   }
 });
+
+
+
+let canvasFingerprintLogs = [];
+
+// Espera informações do content.js
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'canvasFingerprint') {
+    // Guarda tentativa
+    canvasFingerprintLogs.push({
+      method: message.method,
+      url: message.url,
+      timestamp: new Date().toLocaleTimeString()
+    });
+
+    console.log(`Canvas fingerprinting detected: ${message.method} on ${message.url}`);
+  }
+
+  // Envia resultados ao popup.js quando ele chama por getCanvasFingerprintLogs
+  if (message.action === 'getCanvasFingerprintLogs') {
+    sendResponse({ logs: canvasFingerprintLogs });
+  }
+});

@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const firstPartyNumber = document.getElementById('firstPartyNumber');
   const thirdPartyCookieNumber = document.getElementById('thirdPartyCookieNumber'); 
   
-  const changesList = document.getElementById('domChangesList');
-  const refreshButton = document.getElementById('DOMrefreshButton');
+  const domchangesList = document.getElementById('domChangesList');
+  const DOMrefreshButton = document.getElementById('DOMrefreshButton');
 
 
 
@@ -134,11 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // Quando clicar o botão de dar update na lista de mudanças, ativar função
-  refreshButton.addEventListener('click', () => {
+  DOMrefreshButton.addEventListener('click', () => {
 
-    if (changesList.style.display === 'none') {
+    if (domchangesList.style.display === 'none') {
 
-      changesList.style.display = 'block';
+      domchangesList.style.display = 'block';
 
       // Chama função no background.js para pegar as mudanças no DOM
       browser.runtime.sendMessage({ action: 'getDomChanges' }).then((response) => {
@@ -148,20 +148,59 @@ document.addEventListener('DOMContentLoaded', () => {
         if (changes.length === 0) {
           const emptyItem = document.createElement('li');
           emptyItem.textContent = 'No DOM changes detected.';
-          changesList.appendChild(emptyItem);
+          domchangesList.appendChild(emptyItem);
         } else {
           // Se há mudanças, colocar elas na lista
           changes.forEach(change => {
             const listItem = document.createElement('li');
             listItem.textContent = `[${change.time}] ${change.type}: ${change.node} - ${change.content || 'No content'}`;
-            changesList.appendChild(listItem);
+            domchangesList.appendChild(listItem);
           });
         }
       }).catch((error) => {
         console.error("Error fetching DOM changes:", error);
       });
     } else {
-      changesList.style.display = 'none';
+      domchangesList.style.display = 'none';
+    }
+    
+  });
+
+  const logsList = document.getElementById('fingerprintLogs');
+  const canvasrefreshButton = document.getElementById('canvasRefreshButton');
+
+  // Quando o botão de fingerprinting for clicado
+  canvasrefreshButton.addEventListener('click', () =>  {
+
+    // Verificação de se a lista está visível
+    if (logsList.style.display === 'none') {
+
+      // Deixa lista visível
+      logsList.style.display = 'block';
+
+      // Chamada para o background.js, recebe a lista de instâncias
+      browser.runtime.sendMessage({ action: 'getCanvasFingerprintLogs' }).then((response) => {
+      const logs = response.logs;
+
+        logsList.innerHTML = '';
+
+        if (logs.length === 0) {
+          const emptyItem = document.createElement('li');
+          emptyItem.textContent = 'No canvas fingerprinting detected.';
+          logsList.appendChild(emptyItem);
+        } else {
+          // Coloca as tentativas de fingerprinting na lista
+          logs.forEach(log => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `[${log.timestamp}] ${log.method} detected on ${log.url}`;
+            logsList.appendChild(listItem);
+          });
+        }
+      }).catch((error) => {
+        console.error('Error fetching canvas fingerprint logs:', error);
+      });
+    } else {
+      logsList.style.display = 'none'
     }
     
   });

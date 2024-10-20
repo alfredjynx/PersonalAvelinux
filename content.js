@@ -74,3 +74,40 @@ observer.observe(document, {
   attributes: true, // Verifica mudanças nos atributos
   subtree: true // Verifica a árvore do DOM inteira
 });
+
+
+(function() {
+  // Guarda métodos originais
+  const originalToDataURL = HTMLCanvasElement.prototype.toDataURL;
+  const originalGetImageData = CanvasRenderingContext2D.prototype.getImageData;
+
+  // Detecta canvas fingerprinting via toDataURL()
+  HTMLCanvasElement.prototype.toDataURL = function(...args) {
+    console.warn('Canvas fingerprinting attempt detected (toDataURL) on this page.');
+    
+    // Envia resultados ao background
+    browser.runtime.sendMessage({
+      action: 'canvasFingerprint',
+      method: 'toDataURL',
+      url: window.location.href
+    });
+
+    // Chama método original
+    return originalToDataURL.apply(this, args);
+  };
+
+  // Detecta canvas fingerprinting via getImageData()
+  CanvasRenderingContext2D.prototype.getImageData = function(...args) {
+    console.warn('Canvas fingerprinting attempt detected (getImageData) on this page.');
+    
+    // Envia resultados ao background
+    browser.runtime.sendMessage({
+      action: 'canvasFingerprint',
+      method: 'getImageData',
+      url: window.location.href
+    });
+
+    // Chama método original
+    return originalGetImageData.apply(this, args);
+  };
+})();
