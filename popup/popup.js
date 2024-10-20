@@ -8,10 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const thirdPartyButton = document.getElementById('showThirdPartyButton');
   const thirdPartyList = document.getElementById('thirdPartyList');
   const thirdPartyNumber = document.getElementById('thirdPartyNumber');
-
+  
   const cookiesButton = document.getElementById('showCookiesButton'); 
   const firstPartyNumber = document.getElementById('firstPartyNumber');
   const thirdPartyCookieNumber = document.getElementById('thirdPartyCookieNumber'); 
+  
+  const changesList = document.getElementById('domChangesList');
+  const refreshButton = document.getElementById('DOMrefreshButton');
+
+
 
   // Ativa quando clicado
   cookiesButton.addEventListener('click', () => {
@@ -126,4 +131,39 @@ document.addEventListener('DOMContentLoaded', () => {
       thirdPartyList.style.display = 'none'; 
     }
   });
+
+
+  // Quando clicar o botão de dar update na lista de mudanças, ativar função
+  refreshButton.addEventListener('click', () => {
+
+    if (changesList.style.display === 'none') {
+
+      changesList.style.display = 'block';
+
+      // Chama função no background.js para pegar as mudanças no DOM
+      browser.runtime.sendMessage({ action: 'getDomChanges' }).then((response) => {
+        const changes = response.changes;
+
+        // Se não há mudanças, mostrar no HTML que não há mudanças 
+        if (changes.length === 0) {
+          const emptyItem = document.createElement('li');
+          emptyItem.textContent = 'No DOM changes detected.';
+          changesList.appendChild(emptyItem);
+        } else {
+          // Se há mudanças, colocar elas na lista
+          changes.forEach(change => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `[${change.time}] ${change.type}: ${change.node} - ${change.content || 'No content'}`;
+            changesList.appendChild(listItem);
+          });
+        }
+      }).catch((error) => {
+        console.error("Error fetching DOM changes:", error);
+      });
+    } else {
+      changesList.style.display = 'none';
+    }
+    
+  });
+
 });

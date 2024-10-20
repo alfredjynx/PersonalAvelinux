@@ -3,7 +3,7 @@ body {
     padding: 10vw;
 }
 
-.storageList, .thirdPartyList {
+#storageList, #thirdPartyList, #domChangesList {
     display: none;
     list-style-type: none;
     padding-left: 0;

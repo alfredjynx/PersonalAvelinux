@@ -48,3 +48,23 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ data: thirdPartyConnections });
   }
 });
+
+
+
+let domChangesLog = [];
+
+// Listen for messages from the content script
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'domChange') {
+    // Store the DOM changes from the content script
+    domChangesLog = message.changes;
+
+    // Optional: For debugging, log the changes in the background console
+    console.log("DOM Changes logged:", domChangesLog);
+  }
+  
+  // Respond to popup requests for DOM changes
+  if (message.action === 'getDomChanges') {
+    sendResponse({ changes: domChangesLog });
+  }
+});
