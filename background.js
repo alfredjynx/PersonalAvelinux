@@ -53,17 +53,17 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 let domChangesLog = [];
 
-// Listen for messages from the content script
+// Fica esperando por mudanças no DOM
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'domChange') {
-    // Store the DOM changes from the content script
+    // Guarda as mudanças do DOM numa lista interna (domChangesLog)
     domChangesLog = message.changes;
 
     // Optional: For debugging, log the changes in the background console
     console.log("DOM Changes logged:", domChangesLog);
   }
   
-  // Respond to popup requests for DOM changes
+  // Espera o popup.js chamar e retorna a lista inteira de mudanças do DOM
   if (message.action === 'getDomChanges') {
     sendResponse({ changes: domChangesLog });
   }

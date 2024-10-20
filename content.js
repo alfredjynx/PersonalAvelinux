@@ -21,10 +21,12 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 let domChanges = [];
 
-// Function to track DOM changes
+// Função que recebe uma lista de mutações realizada na página
 function trackDOMChanges(mutationsList) {
   mutationsList.forEach(mutation => {
-    // Track added nodes
+
+
+    // Adição de nós
     if (mutation.addedNodes.length > 0) {
       mutation.addedNodes.forEach(node => {
         domChanges.push({
@@ -36,7 +38,7 @@ function trackDOMChanges(mutationsList) {
       });
     }
 
-    // Track removed nodes
+    // Remocão de nós
     if (mutation.removedNodes.length > 0) {
       mutation.removedNodes.forEach(node => {
         domChanges.push({
@@ -48,7 +50,7 @@ function trackDOMChanges(mutationsList) {
       });
     }
     
-    // Track attribute changes
+    // Mudança de atributos
     if (mutation.type === 'attributes') {
       domChanges.push({
         type: 'Attribute Modified',
@@ -59,16 +61,16 @@ function trackDOMChanges(mutationsList) {
     }
   });
 
-  // Send changes to the background script
+  // Retorna as mudanças
   browser.runtime.sendMessage({ action: 'domChange', changes: domChanges });
 }
 
-// Set up MutationObserver to track changes in the DOM
+// MutationObserver é uma classe da API de Browser que fica esperando e catalogando as mudanças
 const observer = new MutationObserver(trackDOMChanges);
 
-// Start observing the entire document
+// Inicialização do observador
 observer.observe(document, {
-  childList: true, // Tracks addition/removal of nodes
-  attributes: true, // Tracks changes to attributes
-  subtree: true // Observes the entire DOM tree
+  childList: true, // Verifica as mudanças de nós (adição e remoção)
+  attributes: true, // Verifica mudanças nos atributos
+  subtree: true // Verifica a árvore do DOM inteira
 });
