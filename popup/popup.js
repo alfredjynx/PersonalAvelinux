@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // pega os elementos do arquivo HTML (popup.html) por meio dos IDs
+  const scoreButton = document.getElementById('safetyScoreButton');
+  const scoreDisplay = document.getElementById('safetyScore');
+  const detailsDisplay = document.getElementById('details');
+
   const storageButton = document.getElementById('showStorageButton');
   const storageList = document.getElementById('storageList');
   const storageNumber = document.getElementById('storageNumber');
-
+  
   const thirdPartyButton = document.getElementById('showThirdPartyButton');
   const thirdPartyList = document.getElementById('thirdPartyList');
   const thirdPartyNumber = document.getElementById('thirdPartyNumber');
@@ -247,5 +251,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
   });
+
+
+  scoreButton.addEventListener('click', () => {
+      // Request the safety score from the background script
+      browser.runtime.sendMessage({ action: 'getSafetyScore' }).then((response) => {
+        scoreDisplay.textContent = `Safety Score: ${response.score}`;
+  
+        const details = response.data;
+        detailsDisplay.innerHTML = `
+          <p>Cookies: ${details.numCookies} (Third-party: ${details.numThirdPartyCookies})</p>
+          <p>Local Storage Items: ${details.numLocalStorageItems}</p>
+          <p>Third-Party Requests: ${details.numThirdPartyRequests}</p>
+          <p>Fingerprinting Attempts: ${details.fingerprintingAttempts}</p>
+        `;
+      }).catch((error) => {
+        console.error("Error getting safety score:", error);
+      });
+  });
+
+
 
 });
