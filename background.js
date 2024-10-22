@@ -67,6 +67,11 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'getDomChanges') {
     sendResponse({ changes: domChangesLog });
   }
+
+  if (message.action === 'clearDomChanges') {
+    domChangesLog = [];
+    sendResponse({ success: true });
+  }
 });
 
 
@@ -91,3 +96,30 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ logs: canvasFingerprintLogs });
   }
 });
+
+
+function clearAllCookies() {
+  browser.cookies.getAll({}).then((cookies) => {
+    for (let cookie of cookies) {
+      let removing = browser.cookies.remove({
+        url: `https://${cookie.domain}${cookie.path}`,
+        name: cookie.name
+      });
+      removing.then(() => {
+        console.log(`Removed cookie: ${cookie.name}`);
+      }).catch((error) => {
+        console.error(`Error removing cookie: ${cookie.name}`, error);
+      });
+    }
+  }).catch((error) => {
+    console.error("Error fetching cookies:", error);
+  });
+}
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "clearCookies") {
+    clearAllCookies();
+    sendResponse({ success: true });
+  }
+});
+

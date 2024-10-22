@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const thirdPartyList = document.getElementById('thirdPartyList');
   const thirdPartyNumber = document.getElementById('thirdPartyNumber');
   
+  const clearCookiesButton = document.getElementById('clearCookiesButton');
+
   const cookiesButton = document.getElementById('showCookiesButton'); 
   const firstPartyNumber = document.getElementById('firstPartyNumber');
   const thirdPartyCookieNumber = document.getElementById('thirdPartyCookieNumber'); 
@@ -16,43 +18,74 @@ document.addEventListener('DOMContentLoaded', () => {
   const domchangesList = document.getElementById('domChangesList');
   const DOMrefreshButton = document.getElementById('DOMrefreshButton');
 
+  const clearDomButton = document.getElementById('DOMclearButton');
 
+
+  clearCookiesButton.addEventListener('click', () => {
+    browser.runtime.sendMessage({ action: 'clearCookies' }).then((response) => {
+      if (response.success) {
+        firstPartyNumber.textContent = `First-party cookies: ${0}`;
+        thirdPartyCookieNumber.textContent = `Third-party cookies: ${0}`;
+        alert("All cookies have been cleared.");
+      }
+    }).catch((error) => {
+      console.error("Error clearing cookies:", error);
+    });
+  });
+
+  // Função que pega o domínio da URL da Tab aberta
+  function getDomainFromUrl(url) {
+    try {
+      return new URL(url).hostname;
+    } catch (error) {
+      console.error("Invalid URL:", error);
+      return null;
+    }
+  }
 
   // Ativa quando clicado
   cookiesButton.addEventListener('click', () => {
 
     // verifica se o display de cookies já está ativado
     if (firstPartyNumber.style.display === 'none' && thirdPartyCookieNumber.style.display === 'none') {
-
       firstPartyNumber.style.display = 'block';
       thirdPartyCookieNumber.style.display = 'block';
 
-      // Pega todos os cookies e filtra na hora
-      browser.cookies.getAll({}).then(cookies => {
-        let firstPartyCount = 0;
-        let thirdPartyCount = 0;
-
-        cookies.forEach(cookie => {
-          if (cookie.domain.includes('example.com')) { // Replace with your domain
-            firstPartyCount++;
-          } else {
-            thirdPartyCount++;
-          }
+      browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+        const tabUrl = tabs[0].url;
+        const activeTabDomain = getDomainFromUrl(tabUrl);
+  
+        console.log("Active tab domain:", activeTabDomain);
+  
+        // Pega todos os cookies e filtra na hora
+        browser.cookies.getAll({}).then(cookies => {
+          let firstPartyCount = 0;
+          let thirdPartyCount = 0;
+  
+          cookies.forEach(cookie => {
+            if (cookie.domain.includes(activeTabDomain)) { // Use active tab's domain
+              firstPartyCount++;
+            } else {
+              thirdPartyCount++;
+            }
+          });
+  
+          // Coloca os resultados nas caixas de texto HTML
+          firstPartyNumber.textContent = `First-party cookies: ${firstPartyCount}`;
+          thirdPartyCookieNumber.textContent = `Third-party cookies: ${thirdPartyCount}`;
+        }).catch((error) => {
+          console.error("Error fetching cookies:", error);
         });
-
-        // Coloca os resultados nas caixas de texto HTML
-        firstPartyNumber.textContent = `First-party cookies: ${firstPartyCount}`;
-        thirdPartyCookieNumber.textContent = `Third-party cookies: ${thirdPartyCount}`;
       }).catch((error) => {
-        
-        console.error("Error fetching cookies:", error);
+        console.error("Error fetching active tab domain:", error);
       });
-    } else {
 
-        firstPartyNumber.style.display = 'none';
-        thirdPartyCookieNumber.style.display = 'none';
+    } else {
+      firstPartyNumber.style.display = 'none';
+      thirdPartyCookieNumber.style.display = 'none';
     }
   });
+
 
   // Quando há um click no botão de Storage, ativa
   storageButton.addEventListener('click', () => {
@@ -132,6 +165,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  clearDomButton.addEventListener('click', () => {
+    browser.runtime.sendMessage({ action: 'clearDomChanges' }).then((response) => {
+      if (response.success) {
+        domchangesList.innerHTML = '';
+        alert("All Logs have been cleared.");
+      }
+    }).catch((error) => {
+      console.error("Error clearing Logs:", error);
+    });
+  });
 
   // Quando clicar o botão de dar update na lista de mudanças, ativar função
   DOMrefreshButton.addEventListener('click', () => {

@@ -32,3 +32,8 @@ button:hover {
     padding: 1vw;
     text-overflow: clip;
 }
+
+.buttons{
+    display: flex;
+    flex-direction: row;
+}
